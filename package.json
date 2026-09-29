@@ -1,0 +1,34 @@
+{
+  "name": "cybernauts-arena",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cybernauts Arena — Real-Time 1v1 Esports Cybersecurity & Engineering Tournament Platform",
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"magenta,cyan\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "next dev -H 0.0.0.0 -p 3000",
+    "dev:backend": "node server/server.js",
+    "build": "next build",
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"magenta,cyan\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:frontend": "next start -p 3000",
+    "start:backend": "node server/server.js",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^12.42.0",
+    "lucide-react": "^1.33.0",
+    "next": "16.3.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^9.1.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.2",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,593 @@
+{
+  "savedAt": "2026-09-29T12:23:29.512Z",
+  "currentStage": "round_of_16",
+  "phase": "idle",
+  "champion": null,
+  "currentQuestionIndex": 0,
+  "roundId": 1,
+  "activeQuestion": null,
+  "teams": [
+    {
+      "id": "T01",
+      "name": "DEBUGGERS",
+      "pin": "4821",
+      "token": "tok_t01_b83f",
+      "credits": 10000,
+      "multiplier": 1.1,
+      "seed": 1,
+      "members": "Table 1",
+      "color": "#38bdf8"
+    },
+    {
+      "id": "T02",
+      "name": "TRIBYTES",
+      "pin": "7392",
+      "token": "tok_t02_c91a",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 16,
+      "members": "Table 2",
+      "color": "#f43f5e"
+    },
+    {
+      "id": "T03",
+      "name": "HACK3RS",
+      "pin": "5164",
+      "token": "tok_t03_d48b",
+      "credits": 10000,
+      "multiplier": 1.1,
+      "seed": 2,
+      "members": "Table 3",
+      "color": "#a855f7"
+    },
+    {
+      "id": "T04",
+      "name": "404",
+      "pin": "9273",
+      "token": "tok_t04_e20c",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 15,
+      "members": "Table 4",
+      "color": "#22c55e"
+    },
+    {
+      "id": "T05",
+      "name": "OLIPHANS",
+      "pin": "3841",
+      "token": "tok_t05_f73d",
+      "credits": 10000,
+      "multiplier": 1.1,
+      "seed": 3,
+      "members": "Table 5",
+      "color": "#eab308"
+    },
+    {
+      "id": "T06",
+      "name": "STACK OVERLOADS",
+      "pin": "6529",
+      "token": "tok_t06_g15e",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 14,
+      "members": "Table 6",
+      "color": "#ec4899"
+    },
+    {
+      "id": "T07",
+      "name": "CODEHUB",
+      "pin": "1947",
+      "token": "tok_t07_h62f",
+      "credits": 10000,
+      "multiplier": 1.1,
+      "seed": 4,
+      "members": "Table 7",
+      "color": "#06b6d4"
+    },
+    {
+      "id": "T08",
+      "name": "ERROR 404",
+      "pin": "8362",
+      "token": "tok_t08_j94a",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 13,
+      "members": "Table 8",
+      "color": "#f97316"
+    },
+    {
+      "id": "T09",
+      "name": "TEAM DIAMOND",
+      "pin": "2758",
+      "token": "tok_t09_k37b",
+      "credits": 10000,
+      "multiplier": 1.1,
+      "seed": 5,
+      "members": "Table 9",
+      "color": "#84cc16"
+    },
+    {
+      "id": "T10",
+      "name": "CODEFLIX",
+      "pin": "4193",
+      "token": "tok_t10_l88c",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 12,
+      "members": "Table 10",
+      "color": "#14b8a6"
+    },
+    {
+      "id": "T11",
+      "name": "XSCAVENGERS",
+      "pin": "7631",
+      "token": "tok_t11_m42d",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 6,
+      "members": "Table 11",
+      "color": "#6366f1"
+    },
+    {
+      "id": "T12",
+      "name": "PACKET PREDATORS",
+      "pin": "5824",
+      "token": "tok_t12_n91e",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 11,
+      "members": "Table 12",
+      "color": "#d946ef"
+    },
+    {
+      "id": "T13",
+      "name": "NULLCORE",
+      "pin": "9416",
+      "token": "tok_t13_p55f",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 7,
+      "members": "Table 13",
+      "color": "#10b981"
+    },
+    {
+      "id": "T14",
+      "name": "BINARY BRAIN",
+      "pin": "3285",
+      "token": "tok_t14_q76a",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 10,
+      "members": "Table 14",
+      "color": "#fb7185"
+    },
+    {
+      "id": "T15",
+      "name": "VOID CODE",
+      "pin": "6749",
+      "token": "tok_t15_r23b",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 8,
+      "members": "Table 15",
+      "color": "#3b82f6"
+    },
+    {
+      "id": "T16",
+      "name": "BUG HUNTERS",
+      "pin": "1538",
+      "token": "tok_t16_s89c",
+      "credits": 10000,
+      "multiplier": 1,
+      "seed": 9,
+      "members": "Table 16",
+      "color": "#e11d48"
+    }
+  ],
+  "bracket": {
+    "round_of_16": [
+      {
+        "id": "R16-D1",
+        "stage": "round_of_16",
+        "duelNumber": 1,
+        "teamA": {
+          "id": "T01",
+          "name": "DEBUGGERS",
+          "credits": 10000,
+          "multiplier": 1.1,
+          "color": "#38bdf8"
+        },
+        "teamB": {
+          "id": "T02",
+          "name": "TRIBYTES",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#f43f5e"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D2",
+        "stage": "round_of_16",
+        "duelNumber": 2,
+        "teamA": {
+          "id": "T03",
+          "name": "HACK3RS",
+          "credits": 10000,
+          "multiplier": 1.1,
+          "color": "#a855f7"
+        },
+        "teamB": {
+          "id": "T04",
+          "name": "404",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#22c55e"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D3",
+        "stage": "round_of_16",
+        "duelNumber": 3,
+        "teamA": {
+          "id": "T05",
+          "name": "OLIPHANS",
+          "credits": 10000,
+          "multiplier": 1.1,
+          "color": "#eab308"
+        },
+        "teamB": {
+          "id": "T06",
+          "name": "STACK OVERLOADS",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#ec4899"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D4",
+        "stage": "round_of_16",
+        "duelNumber": 4,
+        "teamA": {
+          "id": "T07",
+          "name": "CODEHUB",
+          "credits": 10000,
+          "multiplier": 1.1,
+          "color": "#06b6d4"
+        },
+        "teamB": {
+          "id": "T08",
+          "name": "ERROR 404",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#f97316"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D5",
+        "stage": "round_of_16",
+        "duelNumber": 5,
+        "teamA": {
+          "id": "T09",
+          "name": "TEAM DIAMOND",
+          "credits": 10000,
+          "multiplier": 1.1,
+          "color": "#84cc16"
+        },
+        "teamB": {
+          "id": "T10",
+          "name": "CODEFLIX",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#14b8a6"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D6",
+        "stage": "round_of_16",
+        "duelNumber": 6,
+        "teamA": {
+          "id": "T11",
+          "name": "XSCAVENGERS",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#6366f1"
+        },
+        "teamB": {
+          "id": "T12",
+          "name": "PACKET PREDATORS",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#d946ef"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D7",
+        "stage": "round_of_16",
+        "duelNumber": 7,
+        "teamA": {
+          "id": "T13",
+          "name": "NULLCORE",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#10b981"
+        },
+        "teamB": {
+          "id": "T14",
+          "name": "BINARY BRAIN",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#fb7185"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "R16-D8",
+        "stage": "round_of_16",
+        "duelNumber": 8,
+        "teamA": {
+          "id": "T15",
+          "name": "VOID CODE",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#3b82f6"
+        },
+        "teamB": {
+          "id": "T16",
+          "name": "BUG HUNTERS",
+          "credits": 10000,
+          "multiplier": 1,
+          "color": "#e11d48"
+        },
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      }
+    ],
+    "quarterfinals": [
+      {
+        "id": "QF-D1",
+        "stage": "quarterfinals",
+        "duelNumber": 1,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "QF-D2",
+        "stage": "quarterfinals",
+        "duelNumber": 2,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "QF-D3",
+        "stage": "quarterfinals",
+        "duelNumber": 3,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "QF-D4",
+        "stage": "quarterfinals",
+        "duelNumber": 4,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      }
+    ],
+    "semifinals": [
+      {
+        "id": "SF-D1",
+        "stage": "semifinals",
+        "duelNumber": 1,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      },
+      {
+        "id": "SF-D2",
+        "stage": "semifinals",
+        "duelNumber": 2,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      }
+    ],
+    "finals": [
+      {
+        "id": "F-D1",
+        "stage": "finals",
+        "duelNumber": 1,
+        "teamA": null,
+        "teamB": null,
+        "creditsA": 10000,
+        "creditsB": 10000,
+        "roundDeltaA": 0,
+        "roundDeltaB": 0,
+        "questionsAnswered": 0,
+        "totalQuestions": 3,
+        "winner": null,
+        "status": "pending",
+        "currentRoundSubmissions": {
+          "teamA": null,
+          "teamB": null
+        },
+        "history": []
+      }
+    ]
+  }
+}
