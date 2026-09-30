@@ -1975,7 +1975,7 @@ ${teams.map((t) => `<tr><td>${t.id}</td><td>${t.name}</td><td>${t.members}</td><
                     </div>
 
                     <a
-                      href={`/team?id=${t.id}&pin=${t.pin}`}
+                      href={`/team?id=${t.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ fontSize: "0.68rem", color: "#38bdf8", textDecoration: "none", marginTop: "0.25rem", display: "inline-block" }}
@@ -1989,7 +1989,7 @@ ${teams.map((t) => `<tr><td>${t.id}</td><td>${t.name}</td><td>${t.members}</td><
                       SECRET PIN
                     </div>
                     <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "#eab308", letterSpacing: "2px" }}>
-                      {t.pin}
+                      {(t as any).pin || "••••"}
                     </div>
                   </div>
                 </div>

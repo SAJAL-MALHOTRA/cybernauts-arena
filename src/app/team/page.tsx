@@ -144,6 +144,13 @@ export default function StudentTeamPage() {
   const serverOffsetRef = useRef<number>(0);
   const lastSecondBeeped = useRef<number | null>(null);
   const lastRoundKeyRef = useRef<string | null>(null);
+  // Refs to avoid stale closures in heartbeat / poll callbacks
+  const authTokenRef = useRef<string>("");
+  const teamIdRef = useRef<string>("T01");
+
+  // Keep refs in sync with latest state values (avoids stale closures in callbacks)
+  useEffect(() => { authTokenRef.current = authToken; }, [authToken]);
+  useEffect(() => { teamIdRef.current = teamId; }, [teamId]);
 
   // Initialize Team ID and Auth Token from URL / storage
   useEffect(() => {
@@ -258,11 +265,13 @@ export default function StudentTeamPage() {
         }
 
         // Desk presence heartbeat — fire-and-forget, no retry
-        if (authToken) {
+        const liveToken = authTokenRef.current;
+        const liveTeamId = teamIdRef.current;
+        if (liveToken && liveTeamId) {
           fetch(`${getApiBaseUrl()}/api/tournament/heartbeat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ teamId, token: authToken }),
+            body: JSON.stringify({ teamId: liveTeamId, token: liveToken }),
           }).catch(() => { /* silent fail — presence is best-effort */ });
         }
       }

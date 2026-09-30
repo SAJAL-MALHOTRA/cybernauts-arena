@@ -1218,8 +1218,10 @@ class TournamentService {
     }));
   }
 
-  // Full state for Admin (includes PINs, tokens, presence, and unmasked outcomes)
+  // Full state for public consumption (used by /bracket, /admin poll, /team poll)
+  // IMPORTANT: strip PIN and token — those are only served via admin-only /host-sheet
   getFullState() {
+    const safeTeams = this.teams.map(({ pin, token, ...rest }) => rest); // eslint-disable-line no-unused-vars
     return {
       tournamentName: 'CYBERNAUTS CODE HUNT — ROUND 2 (Championship Duels)',
       currentStage: this.currentStage,
@@ -1227,7 +1229,7 @@ class TournamentService {
       phase: this.phase,
       creditRules: CREDIT_CHANGES,
       startingCredits: 10000,
-      teams: this.teams, // includes .pin and .token for host distribution
+      teams: safeTeams, // PINs and tokens NOT included — use /host-sheet for those
       bracket: this.bracket,
       activeDuels: this.getActiveStageDuels(),
       timer: this.timer,
