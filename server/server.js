@@ -20,9 +20,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ====================================================
 // CYBERNAUTS TOURNAMENT ENGINE REST APIS
-// ====================================================
 
 // Full Tournament State (Admin Console & Arena Screen)
 app.get('/api/tournament/state', (req, res) => {
