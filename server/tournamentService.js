@@ -1,25 +1,50 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
-// 16 Default Teams for Cybernauts Code Hunt Round 2
-// Each team gets a private 4-digit PIN and secure access token
+// ─────────────────────────────────────────────────────────────
+// Secret generation — called on every reset, never hardcoded
+// ─────────────────────────────────────────────────────────────
+const TRIVIAL_PINS = new Set(['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1230']);
+
+function generatePin(usedPins = new Set()) {
+  let pin;
+  let attempts = 0;
+  do {
+    // 4 digits, first digit 1-9 to avoid leading zero confusion
+    const first = Math.floor(Math.random() * 9) + 1;
+    const rest  = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    pin = `${first}${rest}`;
+    attempts++;
+    if (attempts > 200) break; // safety valve — can't infinite loop
+  } while (usedPins.has(pin) || TRIVIAL_PINS.has(pin));
+  usedPins.add(pin);
+  return pin;
+}
+
+function generateToken(teamId) {
+  const hex = crypto.randomBytes(6).toString('hex');
+  return `tok_${teamId.toLowerCase()}_${hex}`;
+}
+
+// Team template — no secrets committed. PINs/tokens are generated at runtime.
 const DEFAULT_TEAMS = [
-  { id: 'T01', name: 'DEBUGGERS', pin: '4821', token: 'tok_t01_b83f', credits: 10000, multiplier: 1.1, seed: 1, members: 'Table 1', color: '#38bdf8' },
-  { id: 'T02', name: 'TRIBYTES', pin: '7392', token: 'tok_t02_c91a', credits: 10000, multiplier: 1.0, seed: 16, members: 'Table 2', color: '#f43f5e' },
-  { id: 'T03', name: 'HACK3RS', pin: '5164', token: 'tok_t03_d48b', credits: 10000, multiplier: 1.1, seed: 2, members: 'Table 3', color: '#a855f7' },
-  { id: 'T04', name: '404', pin: '9273', token: 'tok_t04_e20c', credits: 10000, multiplier: 1.0, seed: 15, members: 'Table 4', color: '#22c55e' },
-  { id: 'T05', name: 'OLIPHANS', pin: '3841', token: 'tok_t05_f73d', credits: 10000, multiplier: 1.1, seed: 3, members: 'Table 5', color: '#eab308' },
-  { id: 'T06', name: 'STACK OVERLOADS', pin: '6529', token: 'tok_t06_g15e', credits: 10000, multiplier: 1.0, seed: 14, members: 'Table 6', color: '#ec4899' },
-  { id: 'T07', name: 'CODEHUB', pin: '1947', token: 'tok_t07_h62f', credits: 10000, multiplier: 1.1, seed: 4, members: 'Table 7', color: '#06b6d4' },
-  { id: 'T08', name: 'ERROR 404', pin: '8362', token: 'tok_t08_j94a', credits: 10000, multiplier: 1.0, seed: 13, members: 'Table 8', color: '#f97316' },
-  { id: 'T09', name: 'TEAM DIAMOND', pin: '2758', token: 'tok_t09_k37b', credits: 10000, multiplier: 1.1, seed: 5, members: 'Table 9', color: '#84cc16' },
-  { id: 'T10', name: 'CODEFLIX', pin: '4193', token: 'tok_t10_l88c', credits: 10000, multiplier: 1.0, seed: 12, members: 'Table 10', color: '#14b8a6' },
-  { id: 'T11', name: 'XSCAVENGERS', pin: '7631', token: 'tok_t11_m42d', credits: 10000, multiplier: 1.0, seed: 6, members: 'Table 11', color: '#6366f1' },
-  { id: 'T12', name: 'PACKET PREDATORS', pin: '5824', token: 'tok_t12_n91e', credits: 10000, multiplier: 1.0, seed: 11, members: 'Table 12', color: '#d946ef' },
-  { id: 'T13', name: 'NULLCORE', pin: '9416', token: 'tok_t13_p55f', credits: 10000, multiplier: 1.0, seed: 7, members: 'Table 13', color: '#10b981' },
-  { id: 'T14', name: 'BINARY BRAIN', pin: '3285', token: 'tok_t14_q76a', credits: 10000, multiplier: 1.0, seed: 10, members: 'Table 14', color: '#fb7185' },
-  { id: 'T15', name: 'VOID CODE', pin: '6749', token: 'tok_t15_r23b', credits: 10000, multiplier: 1.0, seed: 8, members: 'Table 15', color: '#3b82f6' },
-  { id: 'T16', name: 'BUG HUNTERS', pin: '1538', token: 'tok_t16_s89c', credits: 10000, multiplier: 1.0, seed: 9, members: 'Table 16', color: '#e11d48' },
+  { id: 'T01', name: 'DEBUGGERS',       pin: '0000', token: '', credits: 10000, multiplier: 1.1, seed: 1,  members: 'Table 1',  color: '#38bdf8' },
+  { id: 'T02', name: 'TRIBYTES',        pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 16, members: 'Table 2',  color: '#f43f5e' },
+  { id: 'T03', name: 'HACK3RS',         pin: '0000', token: '', credits: 10000, multiplier: 1.1, seed: 2,  members: 'Table 3',  color: '#a855f7' },
+  { id: 'T04', name: '404',             pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 15, members: 'Table 4',  color: '#22c55e' },
+  { id: 'T05', name: 'OLIPHANS',        pin: '0000', token: '', credits: 10000, multiplier: 1.1, seed: 3,  members: 'Table 5',  color: '#eab308' },
+  { id: 'T06', name: 'STACK OVERLOADS', pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 14, members: 'Table 6',  color: '#ec4899' },
+  { id: 'T07', name: 'CODEHUB',         pin: '0000', token: '', credits: 10000, multiplier: 1.1, seed: 4,  members: 'Table 7',  color: '#06b6d4' },
+  { id: 'T08', name: 'ERROR 404',       pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 13, members: 'Table 8',  color: '#f97316' },
+  { id: 'T09', name: 'TEAM DIAMOND',    pin: '0000', token: '', credits: 10000, multiplier: 1.1, seed: 5,  members: 'Table 9',  color: '#84cc16' },
+  { id: 'T10', name: 'CODEFLIX',        pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 12, members: 'Table 10', color: '#14b8a6' },
+  { id: 'T11', name: 'XSCAVENGERS',     pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 6,  members: 'Table 11', color: '#6366f1' },
+  { id: 'T12', name: 'PACKET PREDATORS',pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 11, members: 'Table 12', color: '#d946ef' },
+  { id: 'T13', name: 'NULLCORE',        pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 7,  members: 'Table 13', color: '#10b981' },
+  { id: 'T14', name: 'BINARY BRAIN',    pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 10, members: 'Table 14', color: '#fb7185' },
+  { id: 'T15', name: 'VOID CODE',       pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 8,  members: 'Table 15', color: '#3b82f6' },
+  { id: 'T16', name: 'BUG HUNTERS',     pin: '0000', token: '', credits: 10000, multiplier: 1.0, seed: 9,  members: 'Table 16', color: '#e11d48' },
 ];
 
 const CREDIT_CHANGES = {
@@ -67,9 +92,19 @@ class TournamentService {
     this.timerInterval = null;
     this.stateFilePath = path.join(__dirname, 'tournament_state.json');
 
+    // Desk presence — in-memory only, not persisted to disk
+    // { [teamId]: { lastSeen: number } }
+    this.presence = {};
+
     const loaded = this.loadState();
     if (!loaded) {
       this.initBracket();
+      // Generate fresh secrets on first boot with no saved state
+      const usedPins = new Set();
+      this.teams.forEach((t) => {
+        t.pin   = generatePin(usedPins);
+        t.token = generateToken(t.id);
+      });
       this.saveState();
     }
     this.startServerTimerLoop();
@@ -867,6 +902,12 @@ class TournamentService {
 
   resetTournament(reseed = false) {
     this.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+    // Generate fresh unique PINs and tokens — never use the placeholders from source
+    const usedPins = new Set();
+    this.teams.forEach((t) => {
+      t.pin   = generatePin(usedPins);
+      t.token = generateToken(t.id);
+    });
     if (reseed) {
       this.teams.sort(() => Math.random() - 0.5);
     }
@@ -881,8 +922,26 @@ class TournamentService {
       remainingSeconds: 30
     };
     this.activeQuestion = null;
+    this.presence = {};
     this.saveState();
-    return { success: true, message: 'Tournament reset with private team PINs and 10,000 credits.' };
+    console.log('[Tournament] Reset complete — new PINs generated for all 16 teams.');
+    return { success: true, message: 'Tournament reset. New PINs generated — print the host sheet before distributing.', teams: this.teams };
+  }
+
+  // Rotate only PINs/tokens without touching bracket or scores.
+  // Use mid-event if a team leaks their PIN.
+  rotatePins(teamIds = null) {
+    const usedPins = new Set(this.teams.map((t) => t.pin));
+    const targets = teamIds
+      ? this.teams.filter((t) => teamIds.includes(t.id))
+      : this.teams;
+    targets.forEach((t) => {
+      usedPins.delete(t.pin); // remove old pin so it can be re-used if needed
+      t.pin   = generatePin(usedPins);
+      t.token = generateToken(t.id);
+    });
+    this.saveState();
+    return { success: true, rotated: targets.map((t) => t.id), teams: this.teams };
   }
 
   resetBalances(toAmount = 10000) {
@@ -1119,7 +1178,47 @@ class TournamentService {
     };
   }
 
-  // Full state for Admin (includes PINs, tokens, and unmasked outcomes)
+  // ──────────────────────────────────────────────────────────────────
+  // Desk Presence
+  // ──────────────────────────────────────────────────────────────────
+
+  // Called by team desk on every poll tick (fire-and-forget)
+  heartbeat(teamId) {
+    if (!teamId) return;
+    this.presence[teamId] = { lastSeen: Date.now() };
+  }
+
+  // Returns presence status for all known teams
+  // live  < 4 s since last heartbeat
+  // stale < 15 s
+  // offline otherwise
+  getPresence() {
+    const now = Date.now();
+    return this.teams.map((t) => {
+      const rec = this.presence[t.id];
+      const age = rec ? (now - rec.lastSeen) / 1000 : Infinity;
+      const status = age < 4 ? 'live' : age < 15 ? 'stale' : 'offline';
+      return { id: t.id, name: t.name, color: t.color, status, lastSeenAgo: isFinite(age) ? Math.round(age) : null };
+    });
+  }
+
+  // ──────────────────────────────────────────────────────────────────
+  // Host Sheet — admin-only, returns everything needed to print the
+  // credential handout before the event starts
+  // ──────────────────────────────────────────────────────────────────
+  getHostSheet() {
+    return this.teams.map((t) => ({
+      id:      t.id,
+      name:    t.name,
+      members: t.members,
+      seed:    t.seed,
+      pin:     t.pin,
+      token:   t.token,
+      color:   t.color
+    }));
+  }
+
+  // Full state for Admin (includes PINs, tokens, presence, and unmasked outcomes)
   getFullState() {
     return {
       tournamentName: 'CYBERNAUTS CODE HUNT — ROUND 2 (Championship Duels)',
@@ -1135,6 +1234,7 @@ class TournamentService {
       activeQuestion: this.activeQuestion,
       questionsCount: this.questions.length,
       champion: this.champion,
+      presence: this.getPresence(),
       serverTime: Date.now()
     };
   }

@@ -256,6 +256,15 @@ export default function StudentTeamPage() {
           }
           confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
         }
+
+        // Desk presence heartbeat — fire-and-forget, no retry
+        if (authToken) {
+          fetch(`${getApiBaseUrl()}/api/tournament/heartbeat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ teamId, token: authToken }),
+          }).catch(() => { /* silent fail — presence is best-effort */ });
+        }
       }
     } catch (err) {
       console.warn("Poll state error:", err);

@@ -160,33 +160,18 @@ npm run dev
 | :--- | :--- | :--- |
 | **Landing Hub** | `http://localhost:3000/` | Navigation dashboard & system telemetry |
 | **Arena Projector** | `http://localhost:3000/bracket` | Fullscreen stadium display |
-| **Team Desks** | `http://localhost:3000/team?id=T01` | Teams `T01` through `T16` (Default PIN: See below) |
-| **Command Center** | `http://localhost:3000/admin` | Default Passcode: `cybernauts2026` |
+| **Team Desks** | `http://localhost:3000/team?id=T01` | Teams `T01` through `T16` (Authenticate via Host Sheet PIN) |
+| **Command Center** | `http://localhost:3000/admin` | Set `ADMIN_PASSCODE` in environment (Default: `cybernauts2026`) |
 
 ---
 
-## 🔑 Default Team Table Credentials
+## 🔑 Team Desk Credentials & Host Sheet
 
-| Team ID | Seed | Default Team Name | 4-Digit PIN | Access Token |
-| :---: | :---: | :--- | :---: | :---: |
-| `T01` | 1 | DEBUGGERS | `4821` | `tok_t01_b83f` |
-| `T02` | 16 | TRIBYTES | `7392` | `tok_t02_c91a` |
-| `T03` | 2 | HACK3RS | `5164` | `tok_t03_d48b` |
-| `T04` | 15 | 404 | `9273` | `tok_t04_e20c` |
-| `T05` | 3 | OLIPHANS | `3841` | `tok_t05_f73d` |
-| `T06` | 14 | STACK OVERLOADS | `6529` | `tok_t06_g15e` |
-| `T07` | 4 | CODEHUB | `1947` | `tok_t07_h62f` |
-| `T08` | 13 | ERROR 404 | `8362` | `tok_t08_j94a` |
-| `T09` | 5 | TEAM DIAMOND | `2758` | `tok_t09_k37b` |
-| `T10` | 12 | CODEFLIX | `4193` | `tok_t10_l88c` |
-| `T11` | 6 | XSCAVENGERS | `7631` | `tok_t11_m42d` |
-| `T12` | 11 | PACKET PREDATORS | `5824` | `tok_t12_n91e` |
-| `T13` | 7 | NULLCORE | `9416` | `tok_t13_p55f` |
-| `T14` | 10 | BINARY BRAIN | `3285` | `tok_t14_q76a` |
-| `T15` | 8 | VOID CODE | `6749` | `tok_t15_r23b` |
-| `T16` | 9 | BUG HUNTERS | `1538` | `tok_t16_s89c` |
-
-*(All names, pins, and seeds can be customized dynamically in the Admin Console).*
+Team PINs and tokens are **never hardcoded or committed to source control**:
+- Unique 4-digit PINs and cryptographically secure tokens are generated dynamically at runtime on tournament initialization and on every `POST /api/tournament/reset`.
+- To distribute table credentials to participants before match start, open the **Admin Command Center (`/admin`) -> Teams Tab -> Print Host Sheet**.
+- This generates a clean, single-page printout with team table assignments and their private PINs.
+- Need to rotate credentials mid-event? Trigger `/api/tournament/rotate-pins` or use the Admin panel without affecting live duel scores or brackets.
 
 ---
 

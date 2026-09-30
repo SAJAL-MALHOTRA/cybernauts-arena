@@ -90,6 +90,14 @@ interface DuelSet {
   questions: DuelQuestion[];
 }
 
+interface PresenceEntry {
+  id: string;
+  name: string;
+  color: string;
+  status: "live" | "stale" | "offline";
+  lastSeenAgo: number | null;
+}
+
 interface TournamentState {
   tournamentName: string;
   currentStage: string;
@@ -116,11 +124,24 @@ interface TournamentState {
   activeQuestion: Question | null;
   questionsCount: number;
   champion: Team | null;
+  presence: PresenceEntry[];
   serverTime: number;
 }
 
 function getApiBaseUrl() {
   return "";
+}
+
+// Injects x-admin-key on every mutating admin request
+function adminFetch(url: string, passcode: string, options: RequestInit = {}): Promise<Response> {
+  return fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-key": passcode,
+      ...(options.headers || {}),
+    },
+  });
 }
 
 const STAGE_CONFIG: Record<string, { label: string; count: number; nextLabel?: string }> = {
@@ -173,7 +194,7 @@ export default function CybernautsAdminPage() {
     try {
       const cleanName = name.trim();
       if (!cleanName) return;
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/update-team`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/update-team`, adminPasscode, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teamId, name: cleanName }),
@@ -215,7 +236,7 @@ export default function CybernautsAdminPage() {
   const handleSaveBatchRename = async () => {
     try {
       setIsSubmittingAction(true);
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/update-teams-batch`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/update-teams-batch`, adminPasscode, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teams: batchTeamsList }),
@@ -234,31 +255,47 @@ export default function CybernautsAdminPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const saved =
-        sessionStorage.getItem("cybernauts_admin_unlocked") === "true" ||
-        sessionStorage.getItem("sabernaut_admin_unlocked") === "true";
-      if (saved) setIsAdminUnlocked(true);
+      const savedPasscode = sessionStorage.getItem("cybernauts_admin_passcode");
+      if (savedPasscode) {
+        setAdminPasscode(savedPasscode);
+        setIsAdminUnlocked(true);
+      }
     }
   }, []);
 
-  const handleUnlockAdmin = (e: React.FormEvent) => {
+  const handleUnlockAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const p = adminPasscode.trim().toLowerCase();
-    if (p === "cybernauts2026" || p === "sabernaut2026" || p === "cybernauts" || p === "admin2026" || p === "admin") {
+    const p = adminPasscode.trim();
+    if (!p) {
+      setPasscodeError("Enter the organizer passcode.");
+      return;
+    }
+    // Validate against server — try a protected endpoint
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/tournament/host-sheet`, {
+        headers: { "x-admin-key": p },
+      });
+      if (res.ok) {
+        setIsAdminUnlocked(true);
+        setPasscodeError("");
+        sessionStorage.setItem("cybernauts_admin_passcode", p);
+        triggerToast("Admin Console Unlocked!");
+      } else {
+        setPasscodeError("Invalid passcode — server rejected it.");
+      }
+    } catch {
+      // Fallback: accept if server unreachable (dev mode)
       setIsAdminUnlocked(true);
       setPasscodeError("");
-      sessionStorage.setItem("cybernauts_admin_unlocked", "true");
-      sessionStorage.setItem("sabernaut_admin_unlocked", "true");
-      triggerToast("Admin Console Unlocked!");
-    } else {
-      setPasscodeError("Invalid Organizer Passcode. Access denied.");
+      sessionStorage.setItem("cybernauts_admin_passcode", p);
+      triggerToast("Admin Console Unlocked (offline mode).");
     }
   };
 
   const handleLockAdmin = () => {
     setIsAdminUnlocked(false);
-    sessionStorage.removeItem("cybernauts_admin_unlocked");
-    sessionStorage.removeItem("sabernaut_admin_unlocked");
+    setAdminPasscode("");
+    sessionStorage.removeItem("cybernauts_admin_passcode");
     triggerToast("Admin Console Locked.", "info");
   };
 
@@ -322,9 +359,8 @@ export default function CybernautsAdminPage() {
     try {
       setIsSubmittingAction(true);
       const qId = selectedQuestionId === "random" ? null : Number(selectedQuestionId);
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/push-question`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/push-question`, adminPasscode, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ questionId: qId }),
       });
       if (res.ok) {
@@ -341,9 +377,8 @@ export default function CybernautsAdminPage() {
   const handleStartTimer = async (seconds: number = 30) => {
     try {
       setIsSubmittingAction(true);
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/start-timer`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/start-timer`, adminPasscode, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ duration: seconds }),
       });
       if (res.ok) {
@@ -361,9 +396,8 @@ export default function CybernautsAdminPage() {
     try {
       setIsSubmittingAction(true);
       const qId = selectedQuestionId === "random" ? null : Number(selectedQuestionId);
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/push-and-start`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/push-and-start`, adminPasscode, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ questionId: qId, duration: seconds }),
       });
       if (res.ok) {
@@ -380,9 +414,8 @@ export default function CybernautsAdminPage() {
   const handlePushDuelQuestion = async (qId: number, duration: number = 30) => {
     try {
       setIsSubmittingAction(true);
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/push-and-start`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/push-and-start`, adminPasscode, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ questionId: qId, duration }),
       });
       if (res.ok) {
@@ -399,7 +432,10 @@ export default function CybernautsAdminPage() {
   const handleRevealOutcomes = async () => {
     try {
       setIsSubmittingAction(true);
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/reveal-outcomes`, { method: "POST" });
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/reveal-outcomes`, adminPasscode, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
       if (res.ok) {
         triggerToast("Outcomes revealed: credit deltas committed and broadcasted.");
         pollTournament();
@@ -413,9 +449,8 @@ export default function CybernautsAdminPage() {
 
   const handleTimerAction = async (action: string, seconds: number = 10) => {
     try {
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/timer-action`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/timer-action`, adminPasscode, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, seconds }),
       });
       if (res.ok) {
@@ -445,7 +480,10 @@ export default function CybernautsAdminPage() {
       `Promote winning teams from ${currentConf.label} to ${currentConf.nextLabel || "the next round"}?`,
       async () => {
         try {
-          const res = await fetch(`${getApiBaseUrl()}/api/tournament/advance-stage`, { method: "POST" });
+          const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/advance-stage`, adminPasscode, {
+            method: "POST",
+            body: JSON.stringify({}),
+          });
           const result = await res.json();
           if (result.success) {
             triggerToast(`Advanced to ${result.currentStage.toUpperCase()}`);
@@ -462,9 +500,8 @@ export default function CybernautsAdminPage() {
 
   const handleSetDuelWinner = async (duelId: string, winnerTeamId: string, teamName: string) => {
     try {
-      const res = await fetch(`${getApiBaseUrl()}/api/tournament/set-duel-winner`, {
+      const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/set-duel-winner`, adminPasscode, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ duelId, winnerTeamId }),
       });
       if (res.ok) {
@@ -480,17 +517,16 @@ export default function CybernautsAdminPage() {
     showConfirm(
       reseed ? "Re-seed Tournament" : "Reset Tournament Credits",
       reseed
-        ? "This will re-seed all 16 teams with fresh brackets and 10,000 starting credits at Round of 16. Proceed?"
-        : "This will reset all team credit balances to 10,000 and restart at Round of 16. Proceed?",
+        ? "This will re-seed all 16 teams with fresh brackets and 10,000 starting credits at Round of 16. NEW PINs will be generated — print the host sheet afterwards. Proceed?"
+        : "This will reset all team credit balances to 10,000 and restart at Round of 16. NEW PINs will be generated — print the host sheet afterwards. Proceed?",
       async () => {
         try {
-          const res = await fetch(`${getApiBaseUrl()}/api/tournament/reset`, {
+          const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/reset`, adminPasscode, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ reseed }),
           });
           if (res.ok) {
-            triggerToast("Tournament reset to 10,000 CR starting baseline.");
+            triggerToast("Tournament reset — new PINs generated. Print the host sheet!");
             pollTournament();
           }
         } catch (err) {
@@ -507,9 +543,8 @@ export default function CybernautsAdminPage() {
       async () => {
         try {
           setIsSubmittingAction(true);
-          const res = await fetch(`${getApiBaseUrl()}/api/tournament/reset-balances`, {
+          const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/reset-balances`, adminPasscode, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ amount: 10000 }),
           });
           if (res.ok) {
@@ -532,8 +567,9 @@ export default function CybernautsAdminPage() {
       async () => {
         try {
           setIsSubmittingAction(true);
-          const res = await fetch(`${getApiBaseUrl()}/api/tournament/move-to-round-2`, {
+          const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/move-to-round-2`, adminPasscode, {
             method: "POST",
+            body: JSON.stringify({}),
           });
           const result = await res.json();
           if (result.success) {
@@ -558,8 +594,9 @@ export default function CybernautsAdminPage() {
       async () => {
         try {
           setIsSubmittingAction(true);
-          const res = await fetch(`${getApiBaseUrl()}/api/tournament/move-to-semifinals`, {
+          const res = await adminFetch(`${getApiBaseUrl()}/api/tournament/move-to-semifinals`, adminPasscode, {
             method: "POST",
+            body: JSON.stringify({}),
           });
           const result = await res.json();
           if (result.success) {
@@ -575,6 +612,54 @@ export default function CybernautsAdminPage() {
         }
       }
     );
+  };
+
+  // Print the host credential sheet
+  const handlePrintHostSheet = async () => {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/tournament/host-sheet`, {
+        headers: { "x-admin-key": adminPasscode },
+      });
+      if (!res.ok) {
+        triggerToast("Could not fetch host sheet — check passcode.", "info");
+        return;
+      }
+      const data = await res.json();
+      const teams: Array<{ id: string; name: string; members: string; seed: number; pin: string; token: string }> = data.teams;
+      const html = `<!DOCTYPE html><html><head><title>CYBERNAUTS HOST SHEET</title>
+<style>
+  body { font-family: monospace; padding: 2rem; background: #fff; color: #000; }
+  h1 { font-size: 1.4rem; text-align: center; margin-bottom: 1rem; }
+  p.note { text-align: center; color: #666; font-size: 0.8rem; margin-bottom: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th { background: #111; color: #fff; padding: 8px 12px; text-align: left; }
+  td { border: 1px solid #ccc; padding: 8px 12px; }
+  tr:nth-child(even) td { background: #f7f7f7; }
+  .pin { font-size: 1.3rem; font-weight: bold; letter-spacing: 0.2em; }
+  @media print { body { padding: 0; } }
+</style>
+</head><body>
+<h1>⚡ CYBERNAUTS ARENA — HOST CREDENTIAL SHEET</h1>
+<p class="note">Generated: ${new Date().toLocaleString()} &nbsp;|&nbsp; CONFIDENTIAL — DO NOT DISTRIBUTE</p>
+<table>
+<thead><tr><th>Team ID</th><th>Name</th><th>Table / Members</th><th>Seed</th><th class="pin">PIN</th><th>Token (backup)</th></tr></thead>
+<tbody>
+${teams.map((t) => `<tr><td>${t.id}</td><td>${t.name}</td><td>${t.members}</td><td>${t.seed}</td><td class="pin">${t.pin}</td><td style="font-size:0.7rem">${t.token}</td></tr>`).join("")}
+</tbody>
+</table>
+<p class="note" style="margin-top:1rem">Destroy after event. PINs rotate on next reset.</p>
+</body></html>`;
+      const win = window.open("", "_blank", "width=900,height=700");
+      if (win) {
+        win.document.write(html);
+        win.document.close();
+        win.focus();
+        setTimeout(() => win.print(), 400);
+      }
+    } catch (err) {
+      console.error(err);
+      triggerToast("Failed to open host sheet.", "info");
+    }
   };
 
   if (!tournament) {
@@ -924,6 +1009,33 @@ export default function CybernautsAdminPage() {
       {/* VIEW: CONTROL (DEFAULT LIVE TOURNAMENT CONSOLE) */}
       {navTab === "control" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+
+          {/* DESK PRESENCE BAR */}
+          <div style={{ background: "#0c0d10", border: "1px solid #27272a", borderRadius: "6px", padding: "0.75rem 1.15rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.6rem" }}>
+              <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.7rem", color: "#71717a", letterSpacing: "0.1em" }}>
+                DESK PRESENCE
+              </span>
+              <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.65rem", fontFamily: "var(--font-mono)", color: "#71717a" }}>
+                <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#22c55e", marginRight: 4 }} />LIVE</span>
+                <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#eab308", marginRight: 4 }} />STALE</span>
+                <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#3f3f46", marginRight: 4 }} />OFFLINE</span>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+              {(tournament.presence || []).map((p) => {
+                const dotColor = p.status === "live" ? "#22c55e" : p.status === "stale" ? "#eab308" : "#3f3f46";
+                const label = p.status === "live" ? `${p.id} — LIVE` : p.status === "stale" ? `${p.id} — stale (${p.lastSeenAgo}s ago)` : `${p.id} — offline`;
+                return (
+                  <div key={p.id} title={label} style={{ display: "flex", alignItems: "center", gap: "0.25rem", background: "#18181b", borderRadius: "4px", padding: "3px 7px", border: `1px solid ${p.status === "live" ? "#166534" : p.status === "stale" ? "#713f12" : "#27272a"}` }}>
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: dotColor, display: "inline-block", boxShadow: p.status === "live" ? `0 0 6px ${dotColor}` : "none" }} />
+                    <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.62rem", color: p.status === "live" ? "#86efac" : p.status === "stale" ? "#fde68a" : "#52525b" }}>{p.id}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* 2. QUESTION BAR & DISPATCH */}
           {/* 2. DUEL SET & 3-QUESTION MATCH CONTROLLER */}
           {(() => {
@@ -1717,25 +1829,49 @@ export default function CybernautsAdminPage() {
               </div>
             </div>
 
-            <button
-              onClick={handleOpenBatchRename}
-              style={{
-                padding: "0.4rem 0.85rem",
-                borderRadius: "4px",
-                background: "#38bdf8",
-                border: "none",
-                color: "#09090b",
-                fontSize: "0.75rem",
-                fontWeight: 800,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.35rem",
-              }}
-            >
-              <Edit3 size={13} />
-              <span>Rename Teams (Bulk / Paste)</span>
-            </button>
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+              {/* Print Host Sheet */}
+              <button
+                onClick={handlePrintHostSheet}
+                title="Open a printable host credential sheet with all team PINs"
+                style={{
+                  padding: "0.4rem 0.85rem",
+                  borderRadius: "4px",
+                  background: "#22c55e",
+                  border: "none",
+                  color: "#052e16",
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                }}
+              >
+                <KeyRound size={13} />
+                <span>Print Host Sheet</span>
+              </button>
+
+              <button
+                onClick={handleOpenBatchRename}
+                style={{
+                  padding: "0.4rem 0.85rem",
+                  borderRadius: "4px",
+                  background: "#38bdf8",
+                  border: "none",
+                  color: "#09090b",
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                }}
+              >
+                <Edit3 size={13} />
+                <span>Rename Teams (Bulk / Paste)</span>
+              </button>
+            </div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "0.6rem" }}>

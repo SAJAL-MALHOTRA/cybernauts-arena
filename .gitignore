@@ -22,6 +22,11 @@ pnpm-debug.log*
 # Local environment variables
 .env*.local
 .env
+server/.env
+
+# Live event state — keep on the host machine / USB only, never commit
+# Take a USB backup before each event
+server/tournament_state.json
 
 # System & IDE files
 .DS_Store
