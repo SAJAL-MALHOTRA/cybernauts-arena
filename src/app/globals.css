@@ -1,8 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Orbitron:wght@700;800;900&display=swap');
 
 :root {
   --font-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Orbitron', var(--font-mono), sans-serif;
+
+  /* Tactical Color Palette */
+  --bg-dark: #050608;
+  --bg-card: #090b10;
+  --bg-card-hover: #0e1118;
+  --border-subtle: #171b24;
+  --border-strong: #232a38;
+
+  --accent-cyan: #00f0ff;
+  --accent-blue: #0284c7;
+  --accent-emerald: #00ff88;
+  --accent-green: #10b981;
+  --accent-purple: #a855f7;
+  --accent-crimson: #ff0055;
+  --accent-rose: #f43f5e;
+  --accent-amber: #f59e0b;
 }
 
 * {
@@ -12,46 +29,76 @@
 }
 
 html, body {
-  background-color: #08090d;
+  background-color: var(--bg-dark);
   color: #f4f4f5;
   font-family: var(--font-primary);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+/* Precision Tech Grid Background */
+.bg-tech-grid {
+  background-color: #06070a;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Sharp Tactical Corner Accents */
+.corner-bracket {
+  position: relative;
+}
+.corner-bracket::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+}
+.corner-bracket::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+}
+
+/* Custom Scrollbar - Sharp 0px radius */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090a0f;
+  background: #080a0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 4px;
+  background: #1f2533;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #374151;
 }
 
-/* Animations */
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.9; }
+/* Utility Animations */
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
 }
 
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(1000%); }
-}
-
-.animate-pulse {
-  animation: pulseGlow 2s ease-in-out infinite;
+.animate-pulse-dot {
+  animation: pulseDot 1.8s ease-in-out infinite;
 }
 
 .code-font {
