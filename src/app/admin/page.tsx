@@ -280,6 +280,7 @@ export default function CybernautsAdminPage() {
         setPasscodeError("");
         sessionStorage.setItem("cybernauts_admin_passcode", p);
         triggerToast("Admin Console Unlocked!");
+        fetchQuestions(p);
       } else {
         setPasscodeError("Invalid passcode — server rejected it.");
       }
@@ -289,6 +290,7 @@ export default function CybernautsAdminPage() {
       setPasscodeError("");
       sessionStorage.setItem("cybernauts_admin_passcode", p);
       triggerToast("Admin Console Unlocked (offline mode).");
+      fetchQuestions(p);
     }
   };
 
@@ -318,11 +320,21 @@ export default function CybernautsAdminPage() {
     }
   };
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (keyOverride?: string) => {
     try {
+      const activeKey =
+        keyOverride ||
+        adminPasscode ||
+        (typeof window !== "undefined" ? sessionStorage.getItem("cybernauts_admin_passcode") || "" : "");
+      if (!activeKey) return;
+
       const [qRes, dRes] = await Promise.all([
-        fetch(`${getApiBaseUrl()}/api/tournament/questions`),
-        fetch(`${getApiBaseUrl()}/api/tournament/duel-sets`),
+        fetch(`${getApiBaseUrl()}/api/tournament/questions`, {
+          headers: { "x-admin-key": activeKey },
+        }),
+        fetch(`${getApiBaseUrl()}/api/tournament/duel-sets`, {
+          headers: { "x-admin-key": activeKey },
+        }),
       ]);
       if (qRes.ok) {
         const data = await qRes.json();
@@ -339,7 +351,8 @@ export default function CybernautsAdminPage() {
 
   useEffect(() => {
     pollTournament();
-    fetchQuestions();
+    const saved = typeof window !== "undefined" ? sessionStorage.getItem("cybernauts_admin_passcode") : null;
+    if (saved) fetchQuestions(saved);
     const interval = setInterval(pollTournament, 600);
     return () => clearInterval(interval);
   }, []);

@@ -111,15 +111,11 @@ app.post('/api/tournament/submit-answer', (req, res) => {
   res.json(result);
 });
 
-// Question bank — public so bracket screen can display counts
-app.get('/api/tournament/questions', (req, res) => {
-  res.json({ count: tournamentService.questions.length, questions: tournamentService.questions });
+// Question count only for public telemetry (no questions, outcomes, or answers leaked)
+app.get('/api/tournament/questions/count', (req, res) => {
+  res.json({ count: tournamentService.questions.length });
 });
 
-// Duel Sets — public
-app.get('/api/tournament/duel-sets', (req, res) => {
-  res.json({ count: (tournamentService.duelSets || []).length, duelSets: tournamentService.duelSets || [] });
-});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN-ONLY ENDPOINTS  (all require x-admin-key header)
@@ -222,7 +218,15 @@ app.post('/api/tournament/update-teams-batch', requireAdmin, (req, res) => {
   res.json(tournamentService.updateTeamsBatch(teams));
 });
 
-// Question Bank CRUD
+// Question Bank & Duel Sets (Protected — Admin Only)
+app.get('/api/tournament/questions', requireAdmin, (req, res) => {
+  res.json({ count: tournamentService.questions.length, questions: tournamentService.questions });
+});
+
+app.get('/api/tournament/duel-sets', requireAdmin, (req, res) => {
+  res.json({ count: (tournamentService.duelSets || []).length, duelSets: tournamentService.duelSets || [] });
+});
+
 app.post('/api/tournament/questions', requireAdmin, (req, res) => {
   res.status(201).json(tournamentService.addQuestion(req.body));
 });
