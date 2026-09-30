@@ -139,7 +139,7 @@ The platform ships with 15 curated 3-part incident response duel sets (45 total 
 ### 1. Clone & Install
 ```bash
 # Clone the repository
-git clone https://github.com/aumanshkaushal/cybernauts-arena.git
+git clone https://github.com/SAJAL-MALHOTRA/cybernauts-arena.git
 cd cybernauts-arena
 
 # Install root frontend dependencies
